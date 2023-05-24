@@ -33,8 +33,8 @@ export class SessionWidget extends BoxPanel {
     this._notebookTracker = options.notebookTracker;
     this._context = options.context;
     this._commands = options.commands;
-    this._wm = options.wm;
-    
+    this._yWidgetManager = options.yWidgetManager;
+
     const tabBarClassList = ['glue-Session-tabBar'];
     this._tabPanel = new HTabPanel({
       tabBarPosition: 'bottom',
@@ -125,7 +125,7 @@ export class SessionWidget extends BoxPanel {
       });
       return;
     }
-    this._wm.registerKernel(kernel);
+    this._yWidgetManager.registerKernel(kernel);
 
     let code = `
     import os
@@ -136,16 +136,13 @@ export class SessionWidget extends BoxPanel {
 
     class GlueSession(Widget):
         def __init__(self, path: str):
-            with open("debug.txt", "at") as f: f.write(f"GlueSession{n}")
+
             ydoc = Y.YDoc()
             self._contents = ydoc.get_map("contents")
             self._dataset = ydoc.get_map("dataset")
             self._links = ydoc.get_map("links")
             self._tabs = ydoc.get_map("tabs")
 
-            self._contents.observe(self._set_contents)
-            self._dataset.observe(self._set_dataset)
-            self._links.observe(self._set_links)
             self._tabs.observe(self._set_tabs)
 
             super().__init__(
@@ -156,15 +153,6 @@ export class SessionWidget extends BoxPanel {
                     path=path,
                 ),
             )
-
-        def _set_contents(self, event):
-            with open("debug.txt", "at") as f: f.write(f"contents{n}{event}{n}")
-
-        def _set_dataset(self, event):
-            with open("debug.txt", "at") as f: f.write(f"dataset{n}{event}{n}")
-
-        def _set_links(self, event):
-            with open("debug.txt", "at") as f: f.write(f"links{n}{event}{n}")
 
         def _set_tabs(self, event):
             with open("debug.txt", "at") as f: f.write(f"tabs{n}{event}{n}")
@@ -304,7 +292,7 @@ export class SessionWidget extends BoxPanel {
   private _context: DocumentRegistry.IContext<GlueSessionModel>;
   private _notebookTracker: INotebookTracker;
   private _commands: CommandRegistry;
-  private _wm: IJupyterYWidgetManager;
+  private _yWidgetManager: IJupyterYWidgetManager;
 }
 
 export namespace SessionWidget {
@@ -314,6 +302,6 @@ export namespace SessionWidget {
     context: DocumentRegistry.IContext<GlueSessionModel>;
     notebookTracker: INotebookTracker;
     commands: CommandRegistry;
-    wm: IJupyterYWidgetManager;
+    yWidgetManager: IJupyterYWidgetManager;
   }
 }
